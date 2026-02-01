@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { UserService } from './userService';
+import { ErrorHandler } from './errorHandler';
+import { Logger } from './logger';
 
 export class UserController {
   private userService: UserService;
@@ -10,10 +12,13 @@ export class UserController {
 
   createUser = async (req: Request, res: Response): Promise<void> => {
     try {
+      Logger.info(`Creating user: ${req.body.email}`);
       const user = await this.userService.createUser(req.body);
       res.status(201).json(user);
     } catch (error: any) {
-      res.status(400).json({ error: error.message });
+      Logger.error('Error creating user', error);
+      const { status, message } = ErrorHandler.handlePrismaError(error);
+      res.status(status).json({ error: message });
     }
   };
 
