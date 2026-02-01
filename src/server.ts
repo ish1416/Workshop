@@ -3,6 +3,7 @@ import cors from 'cors';
 import { DatabaseService } from './database';
 import { UserService } from './userService';
 import { UserController } from './userController';
+import { ValidationMiddleware } from './validation';
 
 export class Server {
   private app: Application;
@@ -29,7 +30,7 @@ export class Server {
 
   private setupRoutes(): void {
     // User CRUD routes
-    this.app.post('/api/users', this.userController.createUser);
+    this.app.post('/api/users', ValidationMiddleware.validateUserInput, this.userController.createUser);
     this.app.get('/api/users', this.userController.getAllUsers);
     this.app.get('/api/users/:id', this.userController.getUserById);
     this.app.put('/api/users/:id', this.userController.updateUser);
